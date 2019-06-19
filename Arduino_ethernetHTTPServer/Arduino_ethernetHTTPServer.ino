@@ -94,6 +94,7 @@ int pinNumber(char *pin)
 
 void loop()
 {
+#define URL_DELIMITER_CHAR ('?')
 #define REQBUFF_SZ (12)
 	char reqBuff[REQBUFF_SZ] = {'\0'};
 	char c = 0;
@@ -137,6 +138,7 @@ void loop()
 
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
+						int pinNewState = 0;
 						// 01234567
 						// SET/D1=0
 						
@@ -145,16 +147,18 @@ void loop()
 							// TODO: ERRO
 						}
 
-						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
-						else                                  digitalWrite(pinReq, HIGH);
+						if(reqBuff[strlen(reqBuff)-1] == '0') pinNewState = LOW;
+						else                                  pinNewState = HIGH;
 
+						digitalWrite(pinReq, pinNewState);
+/*
 Serial.println("*****************");
 Serial.println(strlen(reqBuff));
 Serial.println(reqBuff[strlen(reqBuff)-1]);
 Serial.println(pinReq);
 Serial.println("*****************");
-
-						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, reqBuff[strlen(reqBuff)-1]);
+*/
+						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, (pinNewState == LOW ? '0' : '1'));
 
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
@@ -179,14 +183,14 @@ Serial.println("*****************");
 					client.println("<html>");
 					client.println(response);
 					client.println("</html>");
-
+/*
 Serial.println(">>>>> ENVIANDO:");
 Serial.println(response);
-
+*/
 					break;
 				}
 
-				if(c == '$'){
+				if(c == URL_DELIMITER_CHAR){
 					int i = 0;
 
 					memset(reqBuff, 0, REQBUFF_SZ);
@@ -198,13 +202,14 @@ Serial.println(response);
 						Serial.write(c);
 					}
 					reqBuff[i-2] = '\0'; // writes \0 over \r
-
+/*
 Serial.println(">>>>> RECEBIDO:");
 Serial.println(reqBuff);
 Serial.println(">>>>> RECEBIDO BYTES:");
 Serial.println(i);
 Serial.println(">>>>> RECEBIDO STRLEN():");
 Serial.println(strlen(reqBuff));
+*/
 				}
 
 				if(c == '\n'){
