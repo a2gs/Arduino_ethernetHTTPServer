@@ -89,7 +89,6 @@ void loop()
 
 			if(client.available()){
 #define RESBUFF_SZ (200)
-				int pinState = 0;
 				char response[RESBUFF_SZ] = {'\0'};
 				
 				c = client.read();
@@ -98,7 +97,7 @@ void loop()
 				// character) and the line is blank, the http request has ended,
 				// so you can send a reply
 				if(c == '\n' && currentLineIsBlank){
-					
+
 					if(strncmp(reqBuff, "STATUS", 6) == 0){
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
@@ -112,7 +111,7 @@ void loop()
 
 						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
 						else                                  digitalWrite(pinReq, HIGH);
-						
+
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
 						// 012345
@@ -122,8 +121,8 @@ void loop()
 						if(pinReq == -1){
 							// TODO: ERRO
 						}
-						
-						pinState = digitalRead(pinReq);
+
+						snprintf(response, RESBUFF_SZ, "%c", (digitalRead(pinReq) == LOW ? '0' : '1'));
 					}
 
 					// send a standard http response header
@@ -134,25 +133,14 @@ void loop()
 					client.println();
 					client.println("<!DOCTYPE HTML>");
 					client.println("<html>");
-					// output the value of each analog input pin
-					#if 0
-					for (int analogChannel = 0; analogChannel < 6; analogChannel++) {
-					int sensorReading = analogRead(analogChannel);
-					client.print("analog input ");
-					client.print(analogChannel);
-					client.print(" is ");
-					client.print(sensorReading);
-					client.println("<br />");
-					}
-					#endif
-
+					client.print(response);
 					client.println("</html>");
 					break;
 				}
 
 				if(c == '$'){
 					int i = 0;
-					
+
 					// getting the request parameter
 					for(i = 0; i < REQBUFF_SZ || c == '\n'; i++){
 						char c = client.read();
