@@ -38,6 +38,28 @@ void setup()
 		Serial.println("Ethernet cable is not connected.");
 	}
 
+	// Arduino UNO
+	// pinMode(0, OUTPUT);
+	// pinMode(1, OUTPUT);
+	pinMode(2, OUTPUT);
+	pinMode(3, OUTPUT);
+	// pinMode(4, OUTPUT); // SD Card
+	pinMode(5, OUTPUT);
+	pinMode(6, OUTPUT);
+	pinMode(7, OUTPUT);
+	pinMode(8, OUTPUT);
+	pinMode(9, OUTPUT);
+	// pinMode(10, OUTPUT);
+	// pinMode(11, OUTPUT);
+	// pinMode(12, OUTPUT);
+	// pinMode(13, OUTPUT);
+	pinMode(A0, OUTPUT);
+	pinMode(A1, OUTPUT);
+	pinMode(A2, OUTPUT);
+	pinMode(A3, OUTPUT);
+	pinMode(A4, OUTPUT);
+	pinMode(A5, OUTPUT);
+ 
 	// start the server
 	server.begin();
 	Serial.print("server is at ");
@@ -72,7 +94,7 @@ int pinNumber(char *pin)
 
 void loop()
 {
-#define REQBUFF_SZ (100)
+#define REQBUFF_SZ (12)
 	char reqBuff[REQBUFF_SZ] = {'\0'};
 	char c = 0;
 
@@ -115,7 +137,6 @@ void loop()
 
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
-						char *cc = NULL;
 						// 01234567
 						// SET/D1=0
 						
@@ -124,26 +145,16 @@ void loop()
 							// TODO: ERRO
 						}
 
-						cc = strchr(&reqBuff[4], '='); // strlen() not working
-						if(cc == NULL){
-							// TODO: ERRO
-						}
-						cc++;
+						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
+						else                                  digitalWrite(pinReq, HIGH);
 
-						if(*cc == '0'){
-							Serial.println("aqui1 - LOW");
-							digitalWrite(pinReq, LOW );
-						}else{
-							Serial.println("aqui2 - HIGH");
-							digitalWrite(pinReq, HIGH);
-						}
 Serial.println("*****************");
 Serial.println(strlen(reqBuff));
-Serial.println(*cc);
+Serial.println(reqBuff[strlen(reqBuff)-1]);
 Serial.println(pinReq);
 Serial.println("*****************");
 
-						snprintf(response, RESBUFF_SZ, "GPIO set");
+						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, reqBuff[strlen(reqBuff)-1]);
 
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
@@ -162,7 +173,7 @@ Serial.println("*****************");
 					client.println("HTTP/1.1 200 OK");
 					client.println("Content-Type: text/html");
 					client.println("Connection: close");  // the connection will be closed after completion of the response
-					/* client.println("Refresh: 5"); */  // refresh the page automatically every 5 sec
+					// client.println("Refresh: 5");         refresh the page automatically every 5 sec
 					client.println();
 					client.println("<!DOCTYPE HTML>");
 					client.println("<html>");
@@ -182,17 +193,18 @@ Serial.println(response);
 
 					// getting the request parameter
 					for(i = 0; i < REQBUFF_SZ && c != '\n'; i++){
-						char c = client.read();
+						c = client.read();
 						reqBuff[i] = c;
 						Serial.write(c);
 					}
-					reqBuff[i-1] = '\0'; // writes \0 over \r
+					reqBuff[i-2] = '\0'; // writes \0 over \r
 
 Serial.println(">>>>> RECEBIDO:");
 Serial.println(reqBuff);
 Serial.println(">>>>> RECEBIDO BYTES:");
 Serial.println(i);
-
+Serial.println(">>>>> RECEBIDO STRLEN():");
+Serial.println(strlen(reqBuff));
 				}
 
 				if(c == '\n'){
