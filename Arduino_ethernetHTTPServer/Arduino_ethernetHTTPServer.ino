@@ -107,7 +107,7 @@ void loop()
 						
 						pinReq = pinNumber(&reqBuff[4]);
 						if(pinReq == -1){
-						// TODO: ERRO
+							// TODO: ERRO
 						}
 
 						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
