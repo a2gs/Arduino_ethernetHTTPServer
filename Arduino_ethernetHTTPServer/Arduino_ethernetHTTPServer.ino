@@ -46,7 +46,8 @@ void setup()
 
 int pinNumber(char *pin)
 {
-	if     (strncasecmp(pin, "D1",  2) == 0) return(1);
+	if     (strncasecmp(pin, "D0",  2) == 0) return(0);
+	else if(strncasecmp(pin, "D1",  2) == 0) return(1);
 	else if(strncasecmp(pin, "D2",  2) == 0) return(2);
 	else if(strncasecmp(pin, "D3",  2) == 0) return(3);
 	else if(strncasecmp(pin, "D4",  2) == 0) return(4);
@@ -65,7 +66,6 @@ int pinNumber(char *pin)
 	else if(strncasecmp(pin, "A3",  2) == 0) return(A3);
 	else if(strncasecmp(pin, "A4",  2) == 0) return(A4);
 	else if(strncasecmp(pin, "A5",  2) == 0) return(A5);
-	else if(strncasecmp(pin, "A6",  2) == 0) return(A6);
 
 	return(-1);
 }
@@ -99,6 +99,19 @@ void loop()
 				if(c == '\n' && currentLineIsBlank){
 
 					if(strncmp(reqBuff, "STATUS", 6) == 0){
+						snprintf(response, RESBUFF_SZ,
+						         "D0=%c<br>D1=%c<br>D2=%c<br>D3=%c<br>D4=%c<br>D5=%c<br>D6=%c<br>D7=%c<br>D8=%c<br>D9=%c<br>"
+						         "D10=%c<br>D11=%c<br>D12=%c<br>D13=%c<br>A0=%c<br>A1=%c<br>A2=%c<br>A3=%c<br>A4=%c<br>A5=%c<br>", 
+						         (digitalRead(0)  == LOW ? '0' : '1'), (digitalRead(1)  == LOW ? '0' : '1'),
+						         (digitalRead(2)  == LOW ? '0' : '1'), (digitalRead(3)  == LOW ? '0' : '1'),
+						         (digitalRead(4)  == LOW ? '0' : '1'), (digitalRead(5)  == LOW ? '0' : '1'),
+						         (digitalRead(6)  == LOW ? '0' : '1'), (digitalRead(7)  == LOW ? '0' : '1'),
+						         (digitalRead(8)  == LOW ? '0' : '1'), (digitalRead(9)  == LOW ? '0' : '1'),
+						         (digitalRead(10) == LOW ? '0' : '1'), (digitalRead(11) == LOW ? '0' : '1'),
+						         (digitalRead(12) == LOW ? '0' : '1'), (digitalRead(13) == LOW ? '0' : '1'),
+						         (digitalRead(A0) == LOW ? '0' : '1'), (digitalRead(A1) == LOW ? '0' : '1'),
+						         (digitalRead(A2) == LOW ? '0' : '1'), (digitalRead(A3) == LOW ? '0' : '1'),
+						         (digitalRead(A4) == LOW ? '0' : '1'), (digitalRead(A5) == LOW ? '0' : '1'));
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
 						// 01234567
@@ -112,6 +125,7 @@ void loop()
 						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
 						else                                  digitalWrite(pinReq, HIGH);
 
+            snprintf(response, RESBUFF_SZ, "GPIO set<br>");
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
 						// 012345
@@ -122,7 +136,7 @@ void loop()
 							// TODO: ERRO
 						}
 
-						snprintf(response, RESBUFF_SZ, "%c", (digitalRead(pinReq) == LOW ? '0' : '1'));
+						snprintf(response, RESBUFF_SZ, "%c<br>", (digitalRead(pinReq) == LOW ? '0' : '1'));
 					}
 
 					// send a standard http response header
