@@ -136,19 +136,17 @@ void loop()
 
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
-						int pinNewState = 0;
 						// 01234567
 						// SET/D1=0
-						
+
 						pinReq = pinNumber(&reqBuff[4]);
 						if(pinReq == -1){
 							// TODO: ERRO
 						}
 
-						if(reqBuff[strlen(reqBuff)-1] == '0') pinNewState = LOW;
-						else                                  pinNewState = HIGH;
+						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
+						else                                  digitalWrite(pinReq, HIGH);
 
-						digitalWrite(pinReq, pinNewState);
 /*
 Serial.println("*****************");
 Serial.println(strlen(reqBuff));
@@ -156,7 +154,7 @@ Serial.println(reqBuff[strlen(reqBuff)-1]);
 Serial.println(pinReq);
 Serial.println("*****************");
 */
-						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, (pinNewState == LOW ? '0' : '1'));
+						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, (digitalRead(pinReq) == LOW ? '0' : '1'));
 
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
