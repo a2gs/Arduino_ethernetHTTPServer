@@ -101,7 +101,7 @@ void loop()
 					if(strncmp(reqBuff, "STATUS", 6) == 0){
 						snprintf(response, RESBUFF_SZ,
 						         "D0=%c<br>D1=%c<br>D2=%c<br>D3=%c<br>D4=%c<br>D5=%c<br>D6=%c<br>D7=%c<br>D8=%c<br>D9=%c<br>"
-						         "D10=%c<br>D11=%c<br>D12=%c<br>D13=%c<br>A0=%c<br>A1=%c<br>A2=%c<br>A3=%c<br>A4=%c<br>A5=%c<br>", 
+						         "D10=%c<br>D11=%c<br>D12=%c<br>D13=%c<br>A0=%c<br>A1=%c<br>A2=%c<br>A3=%c<br>A4=%c<br>A5=%c", 
 						         (digitalRead(0)  == LOW ? '0' : '1'), (digitalRead(1)  == LOW ? '0' : '1'),
 						         (digitalRead(2)  == LOW ? '0' : '1'), (digitalRead(3)  == LOW ? '0' : '1'),
 						         (digitalRead(4)  == LOW ? '0' : '1'), (digitalRead(5)  == LOW ? '0' : '1'),
@@ -112,8 +112,10 @@ void loop()
 						         (digitalRead(A0) == LOW ? '0' : '1'), (digitalRead(A1) == LOW ? '0' : '1'),
 						         (digitalRead(A2) == LOW ? '0' : '1'), (digitalRead(A3) == LOW ? '0' : '1'),
 						         (digitalRead(A4) == LOW ? '0' : '1'), (digitalRead(A5) == LOW ? '0' : '1'));
+
 					}else if(strncmp(reqBuff, "SET", 3) == 0){
 						int pinReq = 0;
+						char *cc = NULL;
 						// 01234567
 						// SET/D1=0
 						
@@ -122,10 +124,27 @@ void loop()
 							// TODO: ERRO
 						}
 
-						if(reqBuff[strlen(reqBuff)-1] == '0') digitalWrite(pinReq, LOW );
-						else                                  digitalWrite(pinReq, HIGH);
+						cc = strchr(&reqBuff[4], '='); // strlen() not working
+						if(cc == NULL){
+							// TODO: ERRO
+						}
+						cc++;
 
-            snprintf(response, RESBUFF_SZ, "GPIO set<br>");
+						if(*cc == '0'){
+							Serial.println("aqui1 - LOW");
+							digitalWrite(pinReq, LOW );
+						}else{
+							Serial.println("aqui2 - HIGH");
+							digitalWrite(pinReq, HIGH);
+						}
+Serial.println("*****************");
+Serial.println(strlen(reqBuff));
+Serial.println(*cc);
+Serial.println(pinReq);
+Serial.println("*****************");
+
+						snprintf(response, RESBUFF_SZ, "GPIO set");
+
 					}else if(strncmp(reqBuff, "GET", 3) == 0){
 						int pinReq = 0;
 						// 012345
@@ -136,7 +155,7 @@ void loop()
 							// TODO: ERRO
 						}
 
-						snprintf(response, RESBUFF_SZ, "%c<br>", (digitalRead(pinReq) == LOW ? '0' : '1'));
+						snprintf(response, RESBUFF_SZ, "%c", (digitalRead(pinReq) == LOW ? '0' : '1'));
 					}
 
 					// send a standard http response header
@@ -147,21 +166,33 @@ void loop()
 					client.println();
 					client.println("<!DOCTYPE HTML>");
 					client.println("<html>");
-					client.print(response);
+					client.println(response);
 					client.println("</html>");
+
+Serial.println(">>>>> ENVIANDO:");
+Serial.println(response);
+
 					break;
 				}
 
 				if(c == '$'){
 					int i = 0;
 
+					memset(reqBuff, 0, REQBUFF_SZ);
+
 					// getting the request parameter
-					for(i = 0; i < REQBUFF_SZ || c == '\n'; i++){
+					for(i = 0; i < REQBUFF_SZ && c != '\n'; i++){
 						char c = client.read();
 						reqBuff[i] = c;
 						Serial.write(c);
 					}
 					reqBuff[i-1] = '\0'; // writes \0 over \r
+
+Serial.println(">>>>> RECEBIDO:");
+Serial.println(reqBuff);
+Serial.println(">>>>> RECEBIDO BYTES:");
+Serial.println(i);
+
 				}
 
 				if(c == '\n'){
