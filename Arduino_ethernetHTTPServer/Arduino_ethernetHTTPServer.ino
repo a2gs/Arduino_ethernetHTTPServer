@@ -37,20 +37,20 @@ void setup()
 		Serial.println("Ethernet cable is not connected.");
 
 	// Arduino UNO
-	// pinMode(0, OUTPUT);
-	// pinMode(1, OUTPUT);
+	// pinMode(0, OUTPUT); // Serial
+	// pinMode(1, OUTPUT); // Serial
 	pinMode(2, OUTPUT);
 	pinMode(3, OUTPUT);
-	// pinMode(4, OUTPUT); // SD Card
+	pinMode(4, OUTPUT); // SD Card
 	pinMode(5, OUTPUT);
 	pinMode(6, OUTPUT);
 	pinMode(7, OUTPUT);
 	pinMode(8, OUTPUT);
 	pinMode(9, OUTPUT);
-	// pinMode(10, OUTPUT);
-	// pinMode(11, OUTPUT);
-	// pinMode(12, OUTPUT);
-	// pinMode(13, OUTPUT);
+	// pinMode(10, OUTPUT); // SPI
+	// pinMode(11, OUTPUT); // SPI
+	// pinMode(12, OUTPUT); // SPI
+	// pinMode(13, OUTPUT); // SPI
 	pinMode(A0, OUTPUT);
 	pinMode(A1, OUTPUT);
 	pinMode(A2, OUTPUT);
@@ -120,6 +120,7 @@ void loop()
 				if(c == '\n' && currentLineIsBlank){
 
 					if(strncmp(reqBuff, "STATUS", 6) == 0){
+						/* pins 10, 11, 12 and 13 used to ethernet shield
 						snprintf(response, RESBUFF_SZ,
 						         "D0=%c<br>D1=%c<br>D2=%c<br>D3=%c<br>D4=%c<br>D5=%c<br>D6=%c<br>D7=%c<br>D8=%c<br>D9=%c<br>"
 						         "D10=%c<br>D11=%c<br>D12=%c<br>D13=%c<br>A0=%c<br>A1=%c<br>A2=%c<br>A3=%c<br>A4=%c<br>A5=%c", 
@@ -130,6 +131,18 @@ void loop()
 						         (digitalRead(8)  == LOW ? '0' : '1'), (digitalRead(9)  == LOW ? '0' : '1'),
 						         (digitalRead(10) == LOW ? '0' : '1'), (digitalRead(11) == LOW ? '0' : '1'),
 						         (digitalRead(12) == LOW ? '0' : '1'), (digitalRead(13) == LOW ? '0' : '1'),
+						         (digitalRead(A0) == LOW ? '0' : '1'), (digitalRead(A1) == LOW ? '0' : '1'),
+						         (digitalRead(A2) == LOW ? '0' : '1'), (digitalRead(A3) == LOW ? '0' : '1'),
+						         (digitalRead(A4) == LOW ? '0' : '1'), (digitalRead(A5) == LOW ? '0' : '1'));
+						*/
+						snprintf(response, RESBUFF_SZ,
+						         "D0=%c<br>D1=%c<br>D2=%c<br>D3=%c<br>D4=%c<br>D5=%c<br>D6=%c<br>D7=%c<br>"
+						         "D8=%c<br>D9=%c<br>A0=%c<br>A1=%c<br>A2=%c<br>A3=%c<br>A4=%c<br>A5=%c", 
+						         (digitalRead(0)  == LOW ? '0' : '1'), (digitalRead(1)  == LOW ? '0' : '1'),
+						         (digitalRead(2)  == LOW ? '0' : '1'), (digitalRead(3)  == LOW ? '0' : '1'),
+						         (digitalRead(4)  == LOW ? '0' : '1'), (digitalRead(5)  == LOW ? '0' : '1'),
+						         (digitalRead(6)  == LOW ? '0' : '1'), (digitalRead(7)  == LOW ? '0' : '1'),
+						         (digitalRead(8)  == LOW ? '0' : '1'), (digitalRead(9)  == LOW ? '0' : '1'),
 						         (digitalRead(A0) == LOW ? '0' : '1'), (digitalRead(A1) == LOW ? '0' : '1'),
 						         (digitalRead(A2) == LOW ? '0' : '1'), (digitalRead(A3) == LOW ? '0' : '1'),
 						         (digitalRead(A4) == LOW ? '0' : '1'), (digitalRead(A5) == LOW ? '0' : '1'));
