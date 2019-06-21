@@ -119,7 +119,13 @@ void loop()
 				// so you can send a reply
 				if(c == '\n' && currentLineIsBlank){
 
-					if(strncmp(reqBuff, "STATUS", 6) == 0){
+					/* there is no strncasecmp() into arduino SDK */
+					if((reqBuff[0] == 'S' || reqBuff[0] == 's') &&
+					   (reqBuff[1] == 'T' || reqBuff[1] == 't') &&
+					   (reqBuff[2] == 'A' || reqBuff[2] == 'a') &&
+					   (reqBuff[3] == 'T' || reqBuff[3] == 't') &&
+					   (reqBuff[4] == 'U' || reqBuff[4] == 'u') &&
+					   (reqBuff[5] == 'S' || reqBuff[5] == 's')){
 						/* pins 10, 11, 12 and 13 used to ethernet shield
 						snprintf(response, RESBUFF_SZ,
 						         "D0=%c<br>D1=%c<br>D2=%c<br>D3=%c<br>D4=%c<br>D5=%c<br>D6=%c<br>D7=%c<br>D8=%c<br>D9=%c<br>"
@@ -147,7 +153,9 @@ void loop()
 						         (digitalRead(A2) == LOW ? '0' : '1'), (digitalRead(A3) == LOW ? '0' : '1'),
 						         (digitalRead(A4) == LOW ? '0' : '1'), (digitalRead(A5) == LOW ? '0' : '1'));
 
-					}else if(strncmp(reqBuff, "SET", 3) == 0){
+					}else if((reqBuff[0] == 'S' || reqBuff[0] == 's') &&
+						      (reqBuff[1] == 'E' || reqBuff[1] == 'e') &&
+					         (reqBuff[2] == 'T' || reqBuff[2] == 't')){
 						int pinReq = 0;
 						// 01234567
 						// SET/D1=0
@@ -169,7 +177,9 @@ Serial.println("*****************");
 */
 						snprintf(response, RESBUFF_SZ, "GPIO [%d] set to [%c]", pinReq, (digitalRead(pinReq) == LOW ? '0' : '1'));
 
-					}else if(strncmp(reqBuff, "GET", 3) == 0){
+					}else if((reqBuff[0] == 'G' || reqBuff[0] == 'g') &&
+					         (reqBuff[1] == 'E' || reqBuff[1] == 'e') &&
+					         (reqBuff[2] == 'T' || reqBuff[2] == 't')){
 						int pinReq = 0;
 						// 012345
 						// GET/D1
